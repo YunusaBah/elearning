@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>UTG eLearning — Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --forest: #1b4332;
+            --moss:#2d6a4f;
+            --leaf:#52b788;
+            --ink:#0e1a12;
+            --paper:#fffff8;
+            --cream:#f8f5ef;
+            --line:#ddd8ce;
+            --muted:#7a7065;
+            --err:#9b2226;}
+        html,body{height:100%;font-family:'Jost',sans-serif;}
+        body{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+        .left{background:var(--forest);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden;}
+        .left::after{content:'';position:absolute;right:-120px;top:-120px;width:500px;height:500px;border-radius:50%;border:1px solid rgba(255,255,255,0.05);}
+        .left::before{content:'';position:absolute;left:-80px;bottom:-80px;width:350px;height:350px;border-radius:50%;border:1px solid rgba(255,255,255,0.04);}
+        .logo{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
+        .logo-box{width:48px;height:48px;background:var(--leaf);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#fff;}
+        .logo-text{color:#fff;font-size:1rem;font-weight:500;letter-spacing:0.04em;}
+        .logo-text span{color:rgba(255,255,255,0.4);font-weight:300;}
+        .hero{position:relative;z-index:1;}
+        .hero h1{font-family:'Cormorant Garamond',serif;font-size:3.2rem;line-height:1.1;color:#fff;font-weight:700;margin-bottom:1.2rem;}
+        .hero h1 em{color:var(--leaf);font-style:italic;}
+        .hero p{color:rgba(255,255,255,0.5);font-size:0.95rem;line-height:1.8;max-width:340px;font-weight:300;}
+        .counters{display:flex;gap:2.5rem;position:relative;z-index:1;}
+        .counter{border-left:2px solid var(--leaf);padding-left:1rem;}
+        .counter-num{font-family:'Cormorant Garamond',serif;font-size:2rem;color:#fff;font-weight:600;line-height:1;}
+        .counter-label{color:rgba(255,255,255,0.4);font-size:0.72rem;margin-top:4px;font-weight:300;text-transform:uppercase;letter-spacing:0.06em;}
+        .right{display:flex;align-items:center;justify-content:center;padding:3rem;background:var(--paper);}
+        .form-wrap{width:100%;max-width:400px;}
+        .form-wrap h2{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--ink);margin-bottom:4px;font-weight:700;}
+        .form-wrap > p{color:var(--muted);font-size:0.875rem;margin-bottom:2rem;font-weight:300;}
+        .role-toggle{display:grid;grid-template-columns:1fr 1fr;background:#f0ede7;border-radius:12px;padding:4px;margin-bottom:2rem;gap:4px;}
+        .role-opt{padding:0.7rem;text-align:center;border-radius:9px;cursor:pointer;transition:all 0.2s;font-size:0.875rem;font-weight:500;color:var(--muted);border:none;background:transparent;font-family:'Jost',sans-serif;}
+        .role-opt.active{background:#fff;color:var(--forest);box-shadow:0 1px 6px rgba(0,0,0,0.08);}
+        .field{margin-bottom:1.1rem;}
+        .field label{display:block;font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
+        .field input{width:100%;padding:0.85rem 1rem;border:1.5px solid var(--line);border-radius:10px;font-family:'Jost',sans-serif;font-size:0.95rem;color:var(--ink);background:#fff;outline:none;transition:border-color 0.2s;}
+        .field input:focus{border-color:var(--moss);}
+        .err-box{background:#fff5f5;border:1px solid #ffc9c9;color:var(--err);font-size:0.85rem;padding:0.7rem 1rem;border-radius:8px;margin-bottom:1rem;display:none;}
+        .submit-btn{width:100%;padding:0.95rem;background:var(--forest);color:#fff;border:none;border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:background 0.2s;letter-spacing:0.02em;}
+        .submit-btn:hover{background:var(--moss);}
+        .submit-btn:disabled{opacity:0.65;cursor:not-allowed;}
+        .divider{text-align:center;color:var(--line);font-size:0.85rem;margin:1.2rem 0;position:relative;}
+        .divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--line);}
+        .divider::before{left:0;}.divider::after{right:0;}
+        .alt-link{text-align:center;font-size:0.875rem;color:var(--muted);}
+        .alt-link a{color:var(--forest);font-weight:500;text-decoration:none;}
+        .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        .form-wrap{animation:fadeUp 0.4s ease both;}
+        @media(max-width:768px){body{grid-template-columns:1fr;}.left{display:none;}}
+    </style>
+</head>
+<body>
+<div class="left">
+    <div class="logo">
+        <div class="logo-box">UTG</div>
+        <div class="logo-text">eLearning <span>Platform</span></div>
+    </div>
+    <div class="hero">
+        <h1>Knowledge,<br/><em>distributed</em><br/>for all.</h1>
+        <p>A distributed e-learning system connecting students and lecturers across all departments at the University of The Gambia.</p>
+    </div>
+    <div class="counters">
+        <div class="counter"><div class="counter-num">5+</div><div class="counter-label">Departments</div></div>
+        <div class="counter"><div class="counter-num">2</div><div class="counter-label">User Roles</div></div>
+        <div class="counter"><div class="counter-num">∞</div><div class="counter-label">Materials</div></div>
+    </div>
+</div>
+<div class="right">
+    <div class="form-wrap">
+        <h2>Welcome back</h2>
+        <p>Sign in to access your dashboard</p>
+        <div class="role-toggle">
+            <button class="role-opt active" onclick="setRole('STUDENT',this)">🎓 Student</button>
+            <button class="role-opt" onclick="setRole('LECTURER',this)">👨‍🏫 Lecturer</button>
+        </div>
+        <div class="err-box" id="errBox"></div>
+        <div class="field"><label>Username</label><input type="text" id="username" placeholder="Enter your username" autocomplete="username"/></div>
+        <div class="field"><label>Password</label><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"/></div>
+        <button class="submit-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+        <div class="divider">or</div>
+        <div class="alt-link">No account? <a href="register.html">Create one here</a></div>
+    </div>
+</div>
+<script>
+    // ── CONFIG ──────────────────────────────────────────────
+    const API = 'http://localhost:8080';
+    // ────────────────────────────────────────────────────────
+
+    let selectedRole = 'STUDENT';
+
+    function setRole(r, btn) {
+        selectedRole = r;
+        document.querySelectorAll('.role-opt').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    async function doLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        if (!username || !password) { showErr('Please enter your username and password.'); return; }
+
+        const btn = document.getElementById('loginBtn');
+        btn.innerHTML = '<span class="spinner"></span>Signing in...';
+        btn.disabled = true;
+
+        // Spring Security Basic Auth: base64(username:password)
+        const credentials = btoa(username + ':' + password);
+
+        try {
+            // GET /api/auth/me — returns { username, email, role, department }
+            const res = await fetch(`${API}/api/auth/me`, {
+                headers: { 'Authorization': 'Basic ' + credentials }
+            });
+
+            if (res.ok) {
+                const user = await res.json();
+                // Verify role matches what they selected (optional UX check)
+                localStorage.setItem('auth', credentials);
+                localStorage.setItem('user', JSON.stringify(user));
+                // Route based on role from server (trust server, not toggle)
+                window.location.href = user.role === 'LECTURER' ? 'lecturer.html' : 'student.html';
+            } else if (res.status === 401) {
+                showErr('Invalid username or password.');
+            } else {
+                showErr('Login failed. Please try again. (Status: ' + res.status + ')');
+            }
+        } catch (e) {
+            showErr('Cannot reach server. Make sure Spring Boot is running on port 8080.');
+        } finally {
+            btn.innerHTML = 'Sign In';
+            btn.disabled = false;
+        }
+    }
+
+    function showErr(msg) {
+        const el = document.getElementById('errBox');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

@@ -20,7 +20,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/files")
-@CrossOrigin(origins = "http://localhost:63342")
 public class FileController {
 
     @Autowired
@@ -70,5 +69,20 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + filePath.getFileName() + "\"")
                 .body(resource);
+    }
+
+    // LECTURERS ONLY: delete an uploaded file
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteFile(@PathVariable Long id, Authentication auth) throws IOException {
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() != Role.LECTURER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only lecturers can delete files.");
+        }
+
+        fileService.deleteFile(id);
+        return ResponseEntity.noContent().build();
     }
 }

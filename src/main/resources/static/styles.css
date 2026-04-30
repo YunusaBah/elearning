@@ -322,15 +322,34 @@ th {
     text-transform: uppercase;
 }
 
-.download-btn {
+.file-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-btn,
+.delete-btn {
     min-height: 36px;
     padding: 0 12px;
+}
+
+.download-btn {
     background: var(--blue);
     box-shadow: 0 10px 22px rgba(50, 104, 168, 0.16);
 }
 
 .download-btn:hover {
     background: #244f82;
+}
+
+.delete-btn {
+    background: var(--danger);
+    box-shadow: 0 10px 22px rgba(180, 35, 24, 0.16);
+}
+
+.delete-btn:hover {
+    background: #8f1d14;
 }
 
 .empty {

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>UTG eLearning — Lecturer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--forest:#1b4332;--moss:#2d6a4f;--leaf:#52b788;--ink:#0e1a12;--paper:#fffff8;--cream:#f8f5ef;--line:#ddd8ce;--muted:#7a7065;--err:#9b2226;--sw:250px;}
+        body{font-family:'Jost',sans-serif;background:var(--cream);display:flex;min-height:100vh;}
+        /* SIDEBAR — dark ink tone for lecturers */
+        .sidebar{width:var(--sw);background:#0e1a12;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:20;}
+        .sb-brand{padding:1.5rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:11px;}
+        .sb-logo{width:38px;height:38px;background:var(--leaf);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.8rem;font-weight:700;color:#fff;flex-shrink:0;}
+        .sb-title{font-family:'Cormorant Garamond',serif;font-size:1rem;color:#fff;font-weight:600;}
+        .sb-title span{display:block;font-family:'Jost',sans-serif;font-size:0.68rem;color:rgba(255,255,255,0.25);font-weight:300;margin-top:1px;}
+        .sb-user{padding:1rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.07);}
+        .sb-avatar{width:36px;height:36px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.95rem;font-weight:600;margin-bottom:5px;}
+        .sb-name{color:#fff;font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .sb-role{font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:2px;}
+        .sb-nav{flex:1;padding:0.7rem 0;}
+        .nav-link{display:flex;align-items:center;gap:9px;padding:0.75rem 1.3rem;color:rgba(255,255,255,0.45);cursor:pointer;font-size:0.875rem;transition:all 0.18s;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;font-family:'Jost',sans-serif;}
+        .nav-link:hover{color:#fff;background:rgba(255,255,255,0.04);}
+        .nav-link.active{color:#fff;background:rgba(255,255,255,0.08);border-left-color:var(--leaf);font-weight:500;}
+        .nav-link .ni{font-size:0.95rem;width:20px;text-align:center;}
+        .sb-foot{padding:1rem 1.3rem;border-top:1px solid rgba(255,255,255,0.07);}
+        .sb-foot button{display:flex;align-items:center;gap:7px;background:none;border:none;color:rgba(255,255,255,0.35);font-family:'Jost',sans-serif;font-size:0.82rem;cursor:pointer;transition:color 0.2s;padding:0;}
+        .sb-foot button:hover{color:#fff;}
+        /* MAIN */
+        .main{margin-left:var(--sw);flex:1;padding:2rem 2.2rem;min-height:100vh;}
+        .page{display:none;}.page.active{display:block;animation:fadeIn 0.3s ease both;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+        .page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.8rem;gap:1rem;flex-wrap:wrap;}
+        .page-head-t h1{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--ink);font-weight:700;margin-bottom:3px;}
+        .page-head-t p{color:var(--muted);font-size:0.875rem;font-weight:300;}
+        /* Stats */
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.8rem;}
+        .stat{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:1.2rem 1.4rem;}
+        .stat .si{font-size:1.3rem;margin-bottom:6px;}
+        .stat .sn{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--ink);font-weight:600;line-height:1;}
+        .stat .sl{color:var(--muted);font-size:0.72rem;margin-top:3px;text-transform:uppercase;letter-spacing:0.06em;font-weight:300;}
+        /* Table */
+        .tbl-wrap{background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:1.5rem;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:#f5f2ec;padding:0.65rem 1rem;font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;border-bottom:1px solid var(--line);text-align:left;}
+        td{padding:0.85rem 1rem;font-size:0.875rem;color:var(--ink);border-bottom:1px solid #f0ede8;vertical-align:middle;}
+        tr:last-child td{border-bottom:none;}
+        tr:hover td{background:#fdfcf8;}
+        .er td{text-align:center;color:var(--muted);padding:2.2rem;font-style:italic;font-size:0.875rem;}
+        /* Buttons */
+        .btn{display:inline-flex;align-items:center;gap:5px;padding:0.45rem 1rem;border:none;border-radius:7px;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+        .btn-primary{background:var(--forest);color:#fff;}.btn-primary:hover{background:var(--moss);}
+        .btn-ghost{background:#f0ede7;color:var(--ink);border:1px solid var(--line);}.btn-ghost:hover{background:#e8e4de;}
+        .btn-danger{background:#fff0f0;color:var(--err);border:1px solid #ffc9c9;}.btn-danger:hover{background:#ffe0e0;}
+        .btn:disabled{opacity:0.55;cursor:not-allowed;}
+        /* Tags */
+        .tag{display:inline-flex;padding:2px 8px;border-radius:999px;font-size:0.68rem;font-weight:600;}
+        .tag-green{background:#d1fae5;color:#065f46;}
+        .tag-amber{background:#fef3c7;color:#92400e;}
+        /* Toast */
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.875rem;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,0.15);opacity:0;transform:translateY(8px);transition:all 0.3s;pointer-events:none;z-index:999;max-width:340px;}
+        .toast.show{opacity:1;transform:translateY(0);}
+        .toast.ok{background:var(--forest);color:#fff;}.toast.err{background:var(--err);color:#fff;}
+        /* MODALS */
+        .mover{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+        .mover.open{display:flex;}
+        .modal{background:#fff;border-radius:15px;width:100%;display:flex;flex-direction:column;overflow:hidden;}
+        .modal-lg{max-width:880px;max-height:90vh;}
+        .modal-sm{max-width:500px;}
+        .mhead{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;border-bottom:1px solid var(--line);}
+        .mhead h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--ink);}
+        .mclose{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);transition:color 0.2s;padding:4px;line-height:1;}
+        .mclose:hover{color:var(--ink);}
+        .mbody{flex:1;overflow:auto;}
+        .mfoot{padding:0.85rem 1.3rem;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
+        .mbody iframe{width:100%;height:68vh;border:none;}
+        .mbody img.pimg{max-width:100%;max-height:68vh;display:block;margin:auto;object-fit:contain;padding:1rem;}
+        .no-prev{display:flex;flex-direction:column;align-items:center;justify-content:center;height:240px;color:var(--muted);gap:0.8rem;font-size:0.875rem;}
+        /* Upload form */
+        .form-body{padding:1.4rem;display:flex;flex-direction:column;gap:1rem;}
+        .field{display:flex;flex-direction:column;gap:5px;}
+        .field label{font-size:0.78rem;font-weight:600;color:var(--ink);text-transform:uppercase;letter-spacing:0.04em;}
+        .field input,.field select{padding:0.75rem 1rem;border:1.5px solid var(--line);border-radius:9px;font-family:'Jost',sans-serif;font-size:0.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color 0.2s;}
+        .field input:focus,.field select:focus{border-color:var(--moss);}
+        .field input[type="file"]{padding:0.5rem;background:#faf9f7;cursor:pointer;}
+        .drop-zone{border:2px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s;}
+        .drop-zone:hover{border-color:var(--moss);}
+        .drop-zone p{color:var(--muted);font-size:0.85rem;margin-top:6px;}
+        .fmsg{font-size:0.83rem;padding:0.55rem 0.85rem;border-radius:7px;display:none;}
+        .fmsg.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+        .fmsg.err{background:#fff5f5;color:var(--err);border:1px solid #ffc9c9;}
+        .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sb-brand">
+        <div class="sb-logo">UTG</div>
+        <div class="sb-title">eLearning<span>Lecturer Portal</span></div>
+    </div>
+    <div class="sb-user">
+        <div class="sb-avatar" id="avatarEl">L</div>
+        <div class="sb-name" id="nameEl">Lecturer</div>
+        <div class="sb-role">Lecturer Account</div>
+    </div>
+    <nav class="sb-nav">
+        <button class="nav-link active" onclick="go('dash',this)"><span class="ni">🏠</span>Dashboard</button>
+        <button class="nav-link" onclick="go('upload',this)"><span class="ni">📤</span>Upload Material</button>
+        <button class="nav-link" onclick="go('files',this)"><span class="ni">📄</span>My Uploads</button>
+        <button class="nav-link" onclick="go('submissions',this)"><span class="ni">📬</span>Student Submissions</button>
+    </nav>
+    <div class="sb-foot"><button onclick="logout()">🚪 Sign Out</button></div>
+</aside>
+
+<main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dash">
+        <div class="page-head">
+            <div class="page-head-t">
+                <h1>Lecturer Panel</h1>
+                <p>Upload course materials and review student submissions</p>
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="si">📄</div><div class="sn" id="sc-f">—</div><div class="sl">Files Uploaded</div></div>
+            <div class="stat"><div class="si">🏛️</div><div class="sn" id="sc-d">—</div><div class="sl">Departments</div></div>
+            <div class="stat"><div class="si">📬</div><div class="sn" id="sc-s">—</div><div class="sl">Student Submissions</div></div>
+        </div>
+        <div class="page-head-t" style="margin-bottom:1rem;"><h1 style="font-size:1.3rem;">Recent Uploads</h1></div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>File Name</th><th>Department</th><th>Uploaded</th><th>Actions</th></tr></thead>
+                <tbody id="dash-tbody"><tr class="er"><td colspan="4">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- UPLOAD MATERIAL -->
+    <div class="page" id="page-upload">
+        <div class="page-head">
+            <div class="page-head-t"><h1>Upload Course Material</h1><p>Upload lecture files for your students to download</p></div>
+        </div>
+        <div class="tbl-wrap" style="max-width:560px;">
+            <div class="form-body">
+                <div class="fmsg" id="up-msg"></div>
+                <div class="field">
+                    <label>Department</label>
+                    <select id="up-dept">
+                        <option value="">Select department</option>
+                        <option>Computer Science</option><option>Engineering</option>
+                        <option>Business Administration</option><option>Law</option>
+                        <option>Medicine</option><option>Agriculture</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>File</label>
+                    <div class="drop-zone" onclick="document.getElementById('up-file').click()">
+                        📁
+                        <p id="up-fname">Click to select a file (PDF, PPT, DOC, Image…)</p>
+                        <input type="file" id="up-file" style="display:none"
+                               accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.txt,.png,.jpg,.jpeg"
+                               onchange="onUpFile(this)"/>
+                    </div>
+                </div>
+                <div class="fmsg" id="up-msg2"></div>
+                <button class="btn btn-primary" id="up-btn" onclick="doUpload()" style="padding:0.75rem 2rem;font-size:0.95rem;">
+                    📤 Upload File
+                </button>
+                <p style="font-size:0.78rem;color:var(--muted);">Files are stored on the server with a <strong>ReentrantLock</strong> to prevent concurrent upload conflicts (OS synchronization concept).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MY UPLOADS -->
+    <div class="page" id="page-files">
+        <div class="page-head">
+            <div class="page-head-t"><h1>My Uploads</h1><p>All files you have uploaded. You can preview or delete them.</p></div>
+        </div>
+        <!-- Filter -->
+        <div style="display:flex;gap:8px;margin-bottom:1.2rem;">
+            <input id="deptFilter" placeholder="Filter by department..." style="padding:0.6rem 1rem;border:1.5px solid var(--line);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.875rem;outline:none;flex:1;max-width:280px;"/>
+            <button class="btn btn-ghost" onclick="filterByDept()">Filter</button>
+            <button class="btn btn-ghost" onclick="loadFiles()">All Files</button>
+        </div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>File Name</th><th>Department</th><th>Uploaded By</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody id="files-tbody"><tr class="er"><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- STUDENT SUBMISSIONS -->
+    <div class="page" id="page-submissions">
+        <div class="page-head">
+            <div class="page-head-t"><h1>Student Submissions</h1><p>Review assignment files submitted by your students</p></div>
+        </div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>Student Name</th><th>Assignment</th><th>File</th><th>Submitted</th><th>Actions</th></tr></thead>
+                <tbody id="sub-tbody"><tr class="er"><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- PREVIEW MODAL -->
+<div class="mover" id="previewModal">
+    <div class="modal modal-lg">
+        <div class="mhead">
+            <h3 id="pvTitle">Preview</h3>
+            <button class="mclose" onclick="closePv()">✕</button>
+        </div>
+        <div class="mbody" id="pvBody"></div>
+        <div class="mfoot">
+            <button class="btn btn-ghost" onclick="closePv()">Close</button>
+            <button class="btn btn-primary" id="pvDlBtn">⬇ Download</button>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="mover" id="deleteModal">
+    <div class="modal modal-sm">
+        <div class="mhead"><h3>Delete File</h3><button class="mclose" onclick="closeModal('deleteModal')">✕</button></div>
+        <div class="mbody" style="padding:1.4rem;">
+            <p style="color:var(--muted);font-size:0.9rem;">Are you sure you want to delete <strong id="del-name"></strong>? This cannot be undone.</p>
+        </div>
+        <div class="mfoot">
+            <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+            <button class="btn btn-danger" id="del-confirm-btn" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ── CONFIG ──────────────────────────────────────────────
+    const API = 'http://localhost:8080';
+    // ────────────────────────────────────────────────────────
+
+    const auth = localStorage.getItem('auth');
+    const userRaw = localStorage.getItem('user');
+    if (!auth || !userRaw) { window.location.href = 'login.html'; }
+    const user = JSON.parse(userRaw || '{}');
+    if (user.role === 'STUDENT') { window.location.href = 'student.html'; }
+
+    const H = { 'Authorization': 'Basic ' + auth };
+
+    document.getElementById('nameEl').textContent = user.username || 'Lecturer';
+    document.getElementById('avatarEl').textContent = (user.username || 'L')[0].toUpperCase();
+
+    let deleteTargetId = null;
+
+    /* ── NAVIGATION ── */
+    function go(page, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        if (btn) btn.classList.add('active');
+        if (page === 'dash') loadDash();
+        if (page === 'files') loadFiles();
+        if (page === 'submissions') loadSubmissions();
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+    /* ── DASHBOARD ── */
+    async function loadDash() {
+        try {
+            // GET /api/files
+            const[fRes, sRes] = await Promise.all([
+                fetch(`${API}/api/files`, { headers: H }),
+                fetch(`${API}/api/submissions/list`, { headers: H })
+            ]);
+
+            const files = fRes.ok ? await fRes.json() : [];
+            const subs  = sRes.ok ? await sRes.json() : [];
+
+            const depts = new Set(files.map(f => f.department).filter(Boolean));
+            document.getElementById('sc-f').textContent = files.length;
+            document.getElementById('sc-d').textContent = depts.size;
+            document.getElementById('sc-s').textContent = subs.length;
+
+            renderFilesTable('dash-tbody', files.slice(0, 6), false);
+        } catch (e) {
+            document.getElementById('dash-tbody').innerHTML =
+                '<tr class="er"><td colspan="4">Could not load data. Is Spring Boot running?</td></tr>';
+        }
+    }
+
+    /* ── LOAD ALL FILES ── */
+    async function loadFiles() {
+        const tb = document.getElementById('files-tbody');
+        tb.innerHTML = '<tr class="er"><td colspan="5">Loading...</td></tr>';
+        try {
+            const res = await fetch(`${API}/api/files`, { headers: H });
+            if (!res.ok) throw new Error();
+            const files = await res.json();
+            renderFilesTable('files-tbody', files, true);
+        } catch (e) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">Error loading files.</td></tr>';
+        }
+    }
+
+    /* ── FILTER BY DEPARTMENT ── */
+    async function filterByDept() {
+        const dept = document.getElementById('deptFilter').value.trim();
+        if (!dept) { loadFiles(); return; }
+        const tb = document.getElementById('files-tbody');
+        try {
+            // GET /api/files/department/{dept}
+            const res = await fetch(`${API}/api/files/department/${encodeURIComponent(dept)}`, { headers: H });
+            if (!res.ok) throw new Error();
+            const files = await res.json();
+            renderFilesTable('files-tbody', files, true);
+        } catch (e) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">Error filtering.</td></tr>';
+        }
+    }
+
+    /* ── RENDER FILES TABLE ── */
+    function renderFilesTable(tbodyId, files, showDelete) {
+        const tb = document.getElementById(tbodyId);
+        if (!files || files.length === 0) {
+            const cols = showDelete ? 5 : 4;
+            tb.innerHTML = `<tr class="er"><td colspan="${cols}">No files uploaded yet.</td></tr>`;
+            return;
+        }
+        tb.innerHTML = files.map(f => `
+    <tr>
+      <td><strong>${esc(f.fileName)}</strong></td>
+      <td><span class="tag tag-green">${esc(f.department || 'General')}</span></td>
+      ${showDelete ? `<td>${esc(f.uploadedBy || 'You')}</td>` : ''}
+      <td>${fmtDate(f.uploadedAt)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="openPreview(${f.id},'${esc(f.fileName)}')">👁 Preview</button>
+        <button class="btn btn-primary" onclick="dlFile(${f.id},'${esc(f.fileName)}')">⬇ Download</button>
+        ${showDelete ? `<button class="btn btn-danger" onclick="openDelete(${f.id},'${esc(f.fileName)}')">🗑 Delete</button>` : ''}
+      </td>
+    </tr>`).join('');
+    }
+
+    /* ── UPLOAD FILE ── */
+    function onUpFile(input) {
+        if (input.files[0]) {
+            document.getElementById('up-fname').textContent = '✅ ' + input.files[0].name;
+        }
+    }
+
+    async function doUpload() {
+        const dept = document.getElementById('up-dept').value;
+        const file = document.getElementById('up-file').files[0];
+
+        if (!dept) { showFMsg('up-msg', 'Please select a department.', 'err'); return; }
+        if (!file) { showFMsg('up-msg', 'Please select a file to upload.', 'err'); return; }
+
+        const btn = document.getElementById('up-btn');
+        btn.innerHTML = '<span class="spinner"></span>Uploading...';
+        btn.disabled = true;
+
+        const fd = new FormData();
+        // POST /api/files/upload
+        // Params: file (MultipartFile), department (String)
+        fd.append('file', file);
+        fd.append('department', dept);
+
+        try {
+            const res = await fetch(`${API}/api/files/upload`, {
+                method: 'POST',
+                headers: H,   // No Content-Type — browser sets multipart boundary automatically
+                body: fd
+            });
+
+            if (res.ok) {
+                showFMsg('up-msg', '✅ File uploaded successfully! Students can now access it.', 'ok');
+                document.getElementById('up-dept').value = '';
+                document.getElementById('up-file').value = '';
+                document.getElementById('up-fname').textContent = 'Click to select a file (PDF, PPT, DOC, Image…)';
+                toast('File uploaded!', 'ok');
+                loadDash();
+            } else if (res.status === 403) {
+                showFMsg('up-msg', 'Access denied. Only lecturers can upload files.', 'err');
+            } else {
+                const text = await res.text();
+                showFMsg('up-msg', text || 'Upload failed. Try again.', 'err');
+            }
+        } catch (e) {
+            showFMsg('up-msg', 'Cannot connect to server. Make sure Spring Boot is running on port 8080.', 'err');
+        } finally {
+            btn.innerHTML = '📤 Upload File';
+            btn.disabled = false;
+        }
+    }
+
+    /* ── PREVIEW ── */
+    function openPreview(id, name) {
+        document.getElementById('pvTitle').textContent = name;
+        const ext = name.split('.').pop().toLowerCase();
+        // Stream via download endpoint — GET /api/files/download/{id}
+        const src = `${API}/api/files/download/${id}`;
+        document.getElementById('pvBody').innerHTML = buildPreviewHTML(src, ext, name);
+        document.getElementById('pvDlBtn').onclick = () => dlFile(id, name);
+        document.getElementById('previewModal').classList.add('open');
+    }
+
+    function buildPreviewHTML(src, ext, name) {
+        if (ext === 'pdf') return `<iframe src="${src}" title="${esc(name)}"></iframe>`;
+        if (['png','jpg','jpeg','gif','webp','svg','bmp'].includes(ext))
+            return `<img class="pimg" src="${src}" alt="${esc(name)}"/>`;
+        if (['mp4','webm'].includes(ext))
+            return `<video controls style="width:100%;max-height:68vh;background:#000"><source src="${src}"/></video>`;
+        if (['doc','docx','ppt','pptx','xls','xlsx'].includes(ext))
+            return `<div class="no-prev"><div style="font-size:2.5rem">📝</div><p><strong>${esc(name)}</strong></p><p>Office documents cannot preview inline from localhost.</p><p>Please download to open.</p></div>`;
+        if (['txt','md','csv'].includes(ext))
+            return `<iframe src="${src}" style="width:100%;height:68vh;border:none;font-family:monospace;"></iframe>`;
+        return `<div class="no-prev"><div style="font-size:2.5rem">📄</div><p>No preview for .${ext}</p><p style="font-size:0.8rem">Download to view.</p></div>`;
+    }
+
+    function closePv() {
+        document.getElementById('previewModal').classList.remove('open');
+        document.getElementById('pvBody').innerHTML = '';
+    }
+
+    /* ── DOWNLOAD ── */
+    async function dlFile(id, name) {
+        toast('Downloading...', 'ok');
+        try {
+            // GET /api/files/download/{id}
+            const res = await fetch(`${API}/api/files/download/${id}`, { headers: H });
+            if (!res.ok) throw new Error();
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = name || 'file';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        } catch (e) {
+            toast('Download failed.', 'err');
+        }
+    }
+
+    /* ── DELETE ── */
+    function openDelete(id, name) {
+        deleteTargetId = id;
+        document.getElementById('del-name').textContent = name;
+        document.getElementById('deleteModal').classList.add('open');
+    }
+
+    async function confirmDelete() {
+        if (!deleteTargetId) return;
+        const btn = document.getElementById('del-confirm-btn');
+        btn.innerHTML = '<span class="spinner"></span>Deleting...';
+        btn.disabled = true;
+        try {
+            // DELETE /api/files/{id}
+            const res = await fetch(`${API}/api/files/${deleteTargetId}`, {
+                method: 'DELETE',
+                headers: H
+            });
+            if (res.ok || res.status === 204) {
+                toast('File deleted.', 'ok');
+                closeModal('deleteModal');
+                loadFiles();
+                loadDash();
+            } else {
+                toast('Delete failed. Status: ' + res.status, 'err');
+            }
+        } catch (e) {
+            toast('Cannot connect to server.', 'err');
+        } finally {
+            btn.innerHTML = 'Delete';
+            btn.disabled = false;
+            deleteTargetId = null;
+        }
+    }
+
+    /* ── STUDENT SUBMISSIONS ── */
+    async function loadSubmissions() {
+        const tb = document.getElementById('sub-tbody');
+        try {
+            // GET /api/submissions/list — see SubmissionController.java
+            const res = await fetch(`${API}/api/submissions/list`, { headers: H });
+            if (!res.ok) {
+                tb.innerHTML = '<tr class="er"><td colspan="5">Submissions endpoint not set up yet. Add SubmissionController.java to your backend.</td></tr>';
+                return;
+            }
+            const subs = await res.json();
+            if (!subs.length) {
+                tb.innerHTML = '<tr class="er"><td colspan="5">No submissions yet.</td></tr>';
+                return;
+            }
+            tb.innerHTML = subs.map(s => `
+      <tr>
+        <td><strong>${esc(s.studentName)}</strong></td>
+        <td>${esc(s.assignmentTitle)}</td>
+        <td>${esc(s.fileName)}</td>
+        <td>${fmtDate(s.submittedAt)}</td>
+        <td style="display:flex;gap:6px;">
+          <button class="btn btn-ghost" onclick="openPreview(${s.id},'${esc(s.fileName)}')">👁 Preview</button>
+          <button class="btn btn-primary" onclick="dlSubmission(${s.id},'${esc(s.fileName)}')">⬇ Download</button>
+        </td>
+      </tr>`).join('');
+        } catch (e) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">Error loading submissions.</td></tr>';
+        }
+    }
+
+    async function dlSubmission(id, name) {
+        toast('Downloading submission...', 'ok');
+        try {
+            const res = await fetch(`${API}/api/submissions/download/${id}`, { headers: H });
+            if (!res.ok) throw new Error();
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = name || 'submission';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        } catch (e) {
+            toast('Download failed.', 'err');
+        }
+    }
+
+    /* ── UTILS ── */
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+    function esc(s) {
+        return String(s || '').replace(/[&<>"']/g, c =>
+            ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function showFMsg(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = 'fmsg ' + type;
+        el.style.display = 'block';
+    }
+    let toastTimer;
+    function toast(msg, type = 'ok') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = 'toast show ' + type;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    // Backdrop close
+    document.querySelectorAll('.mover').forEach(m =>
+        m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('open'); document.getElementById('pvBody').innerHTML = ''; } })
+    );
+
+    loadDash();
+</script>
+</body>
+</html>

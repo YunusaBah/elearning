@@ -5,7 +5,16 @@ const state = {
     department: localStorage.getItem("elearning.department") || ""
 };
 
-const API_BASE = window.location.port === "8080" ? "" : "http://localhost:8080";
+const API_BASE = (() => {
+    if (window.location.protocol === "file:") {
+        return "http://localhost:8080";
+    }
+    const localHosts = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
+    if (localHosts.has(window.location.hostname) && window.location.port && window.location.port !== "8080") {
+        return `http://${window.location.hostname}:8080`;
+    }
+    return "";
+})();
 
 const els = {
     navItems: document.querySelectorAll(".nav-item"),
@@ -91,7 +100,12 @@ async function api(path, options = {}) {
     if (state.username && state.password) {
         headers.set("Authorization", authHeader());
     }
-    const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    let response;
+    try {
+        response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    } catch (error) {
+        throw new Error(`Cannot reach the backend at ${API_BASE || window.location.origin}. Make sure Spring Boot is running on port 8080.`);
+    }
     if (!response.ok) {
         const contentType = response.headers.get("Content-Type") || "";
         const text = await response.text();
@@ -142,7 +156,12 @@ function renderFiles(files) {
             <td>${escapeHtml(file.department || "")}</td>
             <td>${escapeHtml(file.uploadedBy || "")}</td>
             <td>${escapeHtml(formatDate(file.uploadedAt))}</td>
-            <td><button class="download-btn" type="button" data-download-id="${file.id}">Download</button></td>
+            <td>
+                <div class="file-actions">
+                    <button class="download-btn" type="button" data-download-id="${file.id}">Download</button>
+                    ${state.role === "LECTURER" ? `<button class="delete-btn" type="button" data-delete-id="${file.id}" data-file-name="${escapeHtml(file.fileName || "this file")}">Delete</button>` : ""}
+                </div>
+            </td>
         </tr>
     `).join("");
 }
@@ -176,14 +195,34 @@ async function downloadFile(id) {
     }
 }
 
+async function deleteFile(id, fileName) {
+    if (!window.confirm(`Delete ${fileName}?`)) {
+        return;
+    }
+
+    try {
+        await api(`/api/files/${id}`, { method: "DELETE" });
+        showToast("File deleted");
+        loadFiles();
+    } catch (error) {
+        showToast(error.message || "Delete failed");
+    }
+}
+
 els.navItems.forEach(item => {
     item.addEventListener("click", () => showSection(item.dataset.section));
 });
 
 els.filesBody.addEventListener("click", event => {
-    const button = event.target.closest("[data-download-id]");
-    if (button) {
-        downloadFile(button.dataset.downloadId);
+    const downloadButton = event.target.closest("[data-download-id]");
+    if (downloadButton) {
+        downloadFile(downloadButton.dataset.downloadId);
+        return;
+    }
+
+    const deleteButton = event.target.closest("[data-delete-id]");
+    if (deleteButton) {
+        deleteFile(deleteButton.dataset.deleteId, deleteButton.dataset.fileName);
     }
 });
 
@@ -218,7 +257,7 @@ els.registerForm.addEventListener("submit", async event => {
     const department = document.querySelector("#registerDepartment").value.trim();
 
     try {
-        await fetch(`${API_BASE}/api/auth/register`, {
+        await api("/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email: username, password, role, department })

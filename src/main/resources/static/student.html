@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>UTG eLearning — Student</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--forest:#1b4332;--moss:#2d6a4f;--leaf:#52b788;--ink:#0e1a12;--paper:#fffff8;--cream:#f8f5ef;--line:#ddd8ce;--muted:#7a7065;--err:#9b2226;--sw:250px;}
+        body{font-family:'Jost',sans-serif;background:var(--cream);display:flex;min-height:100vh;}
+        /* SIDEBAR */
+        .sidebar{width:var(--sw);background:var(--forest);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:20;}
+        .sb-brand{padding:1.5rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:11px;}
+        .sb-logo{width:38px;height:38px;background:var(--leaf);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.8rem;font-weight:700;color:#fff;flex-shrink:0;}
+        .sb-title{font-family:'Cormorant Garamond',serif;font-size:1rem;color:#fff;font-weight:600;}
+        .sb-title span{display:block;font-family:'Jost',sans-serif;font-size:0.68rem;color:rgba(255,255,255,0.3);font-weight:300;margin-top:1px;}
+        .sb-user{padding:1rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+        .sb-avatar{width:36px;height:36px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.95rem;font-weight:600;margin-bottom:5px;}
+        .sb-name{color:#fff;font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .sb-role{font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:2px;}
+        .sb-nav{flex:1;padding:0.7rem 0;}
+        .nav-link{display:flex;align-items:center;gap:9px;padding:0.75rem 1.3rem;color:rgba(255,255,255,0.5);cursor:pointer;font-size:0.875rem;transition:all 0.18s;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;font-family:'Jost',sans-serif;}
+        .nav-link:hover{color:#fff;background:rgba(255,255,255,0.05);}
+        .nav-link.active{color:#fff;background:rgba(255,255,255,0.09);border-left-color:var(--leaf);font-weight:500;}
+        .nav-link .ni{font-size:0.95rem;width:20px;text-align:center;}
+        .sb-foot{padding:1rem 1.3rem;border-top:1px solid rgba(255,255,255,0.08);}
+        .sb-foot button{display:flex;align-items:center;gap:7px;background:none;border:none;color:rgba(255,255,255,0.4);font-family:'Jost',sans-serif;font-size:0.82rem;cursor:pointer;transition:color 0.2s;padding:0;}
+        .sb-foot button:hover{color:#fff;}
+        /* MAIN */
+        .main{margin-left:var(--sw);flex:1;padding:2rem 2.2rem;min-height:100vh;}
+        .page{display:none;}.page.active{display:block;animation:fadeIn 0.3s ease both;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+        .page-head{margin-bottom:1.8rem;}
+        .page-head h1{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--ink);font-weight:700;margin-bottom:3px;}
+        .page-head p{color:var(--muted);font-size:0.875rem;font-weight:300;}
+        /* Stats */
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.8rem;}
+        .stat{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:1.2rem 1.4rem;}
+        .stat .si{font-size:1.3rem;margin-bottom:6px;}
+        .stat .sn{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--ink);font-weight:600;line-height:1;}
+        .stat .sl{color:var(--muted);font-size:0.72rem;margin-top:3px;text-transform:uppercase;letter-spacing:0.06em;font-weight:300;}
+        /* Table */
+        .tbl-wrap{background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:1.5rem;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:#f5f2ec;padding:0.65rem 1rem;font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;border-bottom:1px solid var(--line);text-align:left;}
+        td{padding:0.85rem 1rem;font-size:0.875rem;color:var(--ink);border-bottom:1px solid #f0ede8;vertical-align:middle;}
+        tr:last-child td{border-bottom:none;}
+        tr:hover td{background:#fdfcf8;}
+        .er td{text-align:center;color:var(--muted);padding:2.2rem;font-style:italic;font-size:0.875rem;}
+        /* Buttons */
+        .btn{display:inline-flex;align-items:center;gap:5px;padding:0.45rem 1rem;border:none;border-radius:7px;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+        .btn-primary{background:var(--forest);color:#fff;}.btn-primary:hover{background:var(--moss);}
+        .btn-ghost{background:#f0ede7;color:var(--ink);border:1px solid var(--line);}.btn-ghost:hover{background:#e8e4de;}
+        .btn-warn{background:#fff4e6;color:#92400e;border:1px solid #fcd34d;}.btn-warn:hover{background:#fef3c7;}
+        .btn:disabled{opacity:0.55;cursor:not-allowed;}
+        /* Tags */
+        .tag{display:inline-flex;padding:2px 8px;border-radius:999px;font-size:0.68rem;font-weight:600;}
+        .tag-green{background:#d1fae5;color:#065f46;}
+        .tag-blue{background:#dbeafe;color:#1e40af;}
+        .tag-orange{background:#ffedd5;color:#9a3412;}
+        /* Toast */
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.875rem;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,0.15);opacity:0;transform:translateY(8px);transition:all 0.3s;pointer-events:none;z-index:999;max-width:320px;}
+        .toast.show{opacity:1;transform:translateY(0);}
+        .toast.ok{background:var(--forest);color:#fff;}.toast.err{background:var(--err);color:#fff;}
+        /* MODAL OVERLAY */
+        .mover{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+        .mover.open{display:flex;}
+        .modal{background:#fff;border-radius:15px;width:100%;display:flex;flex-direction:column;overflow:hidden;}
+        .modal-lg{max-width:880px;max-height:90vh;}
+        .modal-sm{max-width:480px;}
+        .mhead{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;border-bottom:1px solid var(--line);}
+        .mhead h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--ink);}
+        .mclose{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);transition:color 0.2s;padding:4px;line-height:1;}
+        .mclose:hover{color:var(--ink);}
+        .mbody{flex:1;overflow:auto;}
+        .mfoot{padding:0.85rem 1.3rem;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
+        /* Preview */
+        .mbody iframe{width:100%;height:68vh;border:none;}
+        .mbody img.pimg{max-width:100%;max-height:68vh;display:block;margin:auto;object-fit:contain;padding:1rem;}
+        .no-prev{display:flex;flex-direction:column;align-items:center;justify-content:center;height:240px;color:var(--muted);gap:0.8rem;font-size:0.875rem;}
+        /* Submit form */
+        .form-body{padding:1.4rem;}
+        .field{margin-bottom:1rem;}
+        .field label{display:block;font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
+        .field input{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line);border-radius:9px;font-family:'Jost',sans-serif;font-size:0.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color 0.2s;}
+        .field input:focus{border-color:var(--moss);}
+        .drop-zone{border:2px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s;}
+        .drop-zone:hover{border-color:var(--moss);}
+        .drop-zone p{color:var(--muted);font-size:0.85rem;margin-top:6px;}
+        .fmsg{font-size:0.83rem;padding:0.55rem 0.85rem;border-radius:7px;display:none;margin-top:0.7rem;}
+        .fmsg.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+        .fmsg.err{background:#fff5f5;color:var(--err);border:1px solid #ffc9c9;}
+        .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        /* Notice banner for students */
+        .notice{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:0.9rem 1.1rem;font-size:0.85rem;color:#166534;margin-bottom:1.5rem;display:flex;align-items:center;gap:8px;}
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sb-brand">
+        <div class="sb-logo">UTG</div>
+        <div class="sb-title">eLearning<span>Student Portal</span></div>
+    </div>
+    <div class="sb-user">
+        <div class="sb-avatar" id="avatarEl">S</div>
+        <div class="sb-name" id="nameEl">Student</div>
+        <div class="sb-role">Student Account</div>
+    </div>
+    <nav class="sb-nav">
+        <button class="nav-link active" onclick="go('dash',this)"><span class="ni">🏠</span>Dashboard</button>
+        <button class="nav-link" onclick="go('materials',this)"><span class="ni">📚</span>Course Materials</button>
+        <button class="nav-link" onclick="go('submit',this)"><span class="ni">📤</span>Submit Assignment</button>
+    </nav>
+    <div class="sb-foot"><button onclick="logout()">🚪 Sign Out</button></div>
+</aside>
+
+<main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dash">
+        <div class="page-head">
+            <h1>Welcome, <span id="greetName">Student</span> 👋</h1>
+            <p>Access your course materials and submit your assignments below</p>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="si">📚</div><div class="sn" id="sc-f">—</div><div class="sl">Materials Available</div></div>
+            <div class="stat"><div class="si">🏛️</div><div class="sn" id="sc-d">—</div><div class="sl">Departments</div></div>
+            <div class="stat"><div class="si">🟢</div><div class="sn">Live</div><div class="sl">System Status</div></div>
+        </div>
+        <div class="notice">✅ As a student you can <strong>preview & download</strong> course materials and <strong>upload your completed assignments</strong>. You cannot upload course materials.</div>
+        <div class="page-head" style="margin-bottom:1rem;"><h1 style="font-size:1.3rem;">Recent Materials</h1></div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>File Name</th><th>Department</th><th>Uploaded By</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody id="dash-tbody"><tr class="er"><td colspan="5">Loading materials...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- COURSE MATERIALS -->
+    <div class="page" id="page-materials">
+        <div class="page-head">
+            <h1>Course Materials</h1>
+            <p>Preview and download lecture files uploaded by your lecturers</p>
+        </div>
+        <!-- Filter bar -->
+        <div style="display:flex;gap:8px;margin-bottom:1.2rem;">
+            <input id="deptFilter" placeholder="Filter by department..." style="padding:0.6rem 1rem;border:1.5px solid var(--line);border-radius:8px;font-family:'Jost',sans-serif;font-size:0.875rem;outline:none;flex:1;max-width:280px;"/>
+            <button class="btn btn-ghost" onclick="filterByDept()">Filter</button>
+            <button class="btn btn-ghost" onclick="loadMaterials()">All Files</button>
+        </div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>File Name</th><th>Department</th><th>Uploaded By</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody id="mat-tbody"><tr class="er"><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SUBMIT ASSIGNMENT -->
+    <div class="page" id="page-submit">
+        <div class="page-head">
+            <h1>Submit Assignment</h1>
+            <p>Upload your completed assignment file here</p>
+        </div>
+        <div class="notice">📤 Upload your finished assignment file. Accepted formats: PDF, DOC, DOCX, ZIP, TXT.</div>
+        <div class="tbl-wrap" style="max-width:560px;">
+            <div style="padding:1.5rem;">
+                <div class="field">
+                    <label>Your Name / Student ID</label>
+                    <input id="sub-name" placeholder="e.g. Kebba Jallow / STU2024001"/>
+                </div>
+                <div class="field">
+                    <label>Assignment Title / Course</label>
+                    <input id="sub-title" placeholder="e.g. Lab Report 1 – Distributed Systems"/>
+                </div>
+                <div class="field">
+                    <label>Your completed file</label>
+                    <div class="drop-zone" onclick="document.getElementById('sub-file').click()">
+                        📎
+                        <p id="sub-fname">Click to choose your file (PDF, DOC, DOCX, ZIP)</p>
+                        <input type="file" id="sub-file" style="display:none" accept=".pdf,.doc,.docx,.zip,.txt" onchange="onSubFile(this)"/>
+                    </div>
+                </div>
+                <div class="fmsg" id="sub-msg"></div>
+                <div style="margin-top:1.2rem;">
+                    <button class="btn btn-primary" id="sub-btn" onclick="doSubmitAssignment()" style="padding:0.75rem 2rem;font-size:0.95rem;">
+                        📤 Submit Assignment
+                    </button>
+                </div>
+                <p style="font-size:0.78rem;color:var(--muted);margin-top:1rem;">Your file will be uploaded to the server and your lecturer will be able to view it.</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- PREVIEW MODAL -->
+<div class="mover" id="previewModal">
+    <div class="modal modal-lg">
+        <div class="mhead">
+            <h3 id="pvTitle">Preview</h3>
+            <button class="mclose" onclick="closePv()">✕</button>
+        </div>
+        <div class="mbody" id="pvBody"></div>
+        <div class="mfoot">
+            <button class="btn btn-ghost" onclick="closePv()">Close</button>
+            <button class="btn btn-primary" id="pvDlBtn">⬇ Download</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ── CONFIG ──────────────────────────────────────────────
+    const API = 'http://localhost:8080';
+    // ────────────────────────────────────────────────────────
+
+    const auth = localStorage.getItem('auth');
+    const userRaw = localStorage.getItem('user');
+
+    // Guard: redirect if not logged in
+    if (!auth || !userRaw) { window.location.href = 'login.html'; }
+    const user = JSON.parse(userRaw || '{}');
+    // Guard: redirect lecturer to their page
+    if (user.role === 'LECTURER') { window.location.href = 'lecturer.html'; }
+
+    const H = { 'Authorization': 'Basic ' + auth };
+
+    // Set user display
+    document.getElementById('nameEl').textContent = user.username || 'Student';
+    document.getElementById('avatarEl').textContent = (user.username || 'S')[0].toUpperCase();
+    document.getElementById('greetName').textContent = user.username || 'Student';
+
+    /* ── NAVIGATION ── */
+    function go(page, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        if (btn) btn.classList.add('active');
+        if (page === 'materials') loadMaterials();
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+    /* ── LOAD DASHBOARD ── */
+    async function loadDash() {
+        try {
+            // GET /api/files — returns list of CourseFile objects
+            const res = await fetch(`${API}/api/files`, { headers: H });
+            if (res.status === 401) { logout(); return; }
+            if (!res.ok) throw new Error('Status ' + res.status);
+
+            const files = await res.json();
+
+            // Count unique departments
+            const depts = new Set(files.map(f => f.department).filter(Boolean));
+            document.getElementById('sc-f').textContent = files.length;
+            document.getElementById('sc-d').textContent = depts.size;
+
+            renderFilesTable('dash-tbody', files.slice(0, 6));
+        } catch (e) {
+            document.getElementById('dash-tbody').innerHTML =
+                '<tr class="er"><td colspan="5">Could not load materials. Is Spring Boot running on port 8080?</td></tr>';
+        }
+    }
+
+    /* ── LOAD MATERIALS PAGE ── */
+    async function loadMaterials() {
+        const tb = document.getElementById('mat-tbody');
+        tb.innerHTML = '<tr class="er"><td colspan="5">Loading...</td></tr>';
+        try {
+            const res = await fetch(`${API}/api/files`, { headers: H });
+            if (!res.ok) throw new Error();
+            const files = await res.json();
+            renderFilesTable('mat-tbody', files);
+        } catch (e) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">Error loading materials.</td></tr>';
+        }
+    }
+
+    /* ── FILTER BY DEPARTMENT ── */
+    async function filterByDept() {
+        const dept = document.getElementById('deptFilter').value.trim();
+        if (!dept) { loadMaterials(); return; }
+        const tb = document.getElementById('mat-tbody');
+        try {
+            // GET /api/files/department/{dept}
+            const res = await fetch(`${API}/api/files/department/${encodeURIComponent(dept)}`, { headers: H });
+            if (!res.ok) throw new Error();
+            const files = await res.json();
+            renderFilesTable('mat-tbody', files);
+        } catch (e) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">Error filtering. Try again.</td></tr>';
+        }
+    }
+
+    /* ── RENDER FILES TABLE ── */
+    function renderFilesTable(tbodyId, files) {
+        const tb = document.getElementById(tbodyId);
+        if (!files || files.length === 0) {
+            tb.innerHTML = '<tr class="er"><td colspan="5">No materials found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = files.map(f => `
+    <tr>
+      <td><strong>${esc(f.fileName)}</strong></td>
+      <td><span class="tag tag-green">${esc(f.department || 'General')}</span></td>
+      <td>${esc(f.uploadedBy || 'Lecturer')}</td>
+      <td>${fmtDate(f.uploadedAt)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="openPreview(${f.id}, '${esc(f.fileName)}', '${esc(f.filePath || '')}')">👁 Preview</button>
+        <button class="btn btn-primary" onclick="dlFile(${f.id}, '${esc(f.fileName)}')">⬇ Download</button>
+      </td>
+    </tr>`).join('');
+    }
+
+    /* ── PREVIEW ── */
+    function openPreview(id, name, path) {
+        document.getElementById('pvTitle').textContent = name;
+        const ext = name.split('.').pop().toLowerCase();
+        // Use download endpoint to stream the file for preview
+        const src = `${API}/api/files/download/${id}`;
+        document.getElementById('pvBody').innerHTML = buildPreviewHTML(src, ext, name);
+        document.getElementById('pvDlBtn').onclick = () => dlFile(id, name);
+        document.getElementById('previewModal').classList.add('open');
+    }
+
+    function buildPreviewHTML(src, ext, name) {
+        // PDF — browser can render inline
+        if (ext === 'pdf') {
+            return `<iframe src="${src}" title="${esc(name)}"></iframe>`;
+        }
+        // Images
+        if (['png','jpg','jpeg','gif','webp','svg','bmp'].includes(ext)) {
+            return `<img class="pimg" src="${src}" alt="${esc(name)}"/>`;
+        }
+        // Video
+        if (['mp4','webm','ogg'].includes(ext)) {
+            return `<video controls style="width:100%;max-height:68vh;background:#000"><source src="${src}"/></video>`;
+        }
+        // Office docs — use Google Docs Viewer (requires public URL — works in demo)
+        if (['doc','docx','ppt','pptx','xls','xlsx'].includes(ext)) {
+            // For localhost, Google Docs Viewer won't work — show message instead
+            return `<div class="no-prev">
+      <div style="font-size:2.5rem">📝</div>
+      <p><strong>${esc(name)}</strong></p>
+      <p>Office documents cannot be previewed in browser from localhost.</p>
+      <p>Please <strong>download</strong> the file to open it.</p>
+    </div>`;
+        }
+        // Plain text
+        if (['txt','md','csv'].includes(ext)) {
+            return `<iframe src="${src}" title="${esc(name)}" style="width:100%;height:68vh;border:none;font-family:monospace;padding:1rem;"></iframe>`;
+        }
+        // Fallback
+        return `<div class="no-prev">
+    <div style="font-size:2.5rem">📄</div>
+    <p>No preview available for .${ext} files</p>
+    <p style="font-size:0.8rem">Please download the file to view it.</p>
+  </div>`;
+    }
+
+    function closePv() {
+        document.getElementById('previewModal').classList.remove('open');
+        document.getElementById('pvBody').innerHTML = '';
+    }
+
+    /* ── DOWNLOAD ── */
+    async function dlFile(id, name) {
+        toast('Starting download...', 'ok');
+        try {
+            // GET /api/files/download/{id}
+            const res = await fetch(`${API}/api/files/download/${id}`, { headers: H });
+            if (!res.ok) throw new Error('Status ' + res.status);
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = name || 'download';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        } catch (e) {
+            toast('Download failed. File may not exist on server.', 'err');
+        }
+    }
+
+    /* ── SUBMIT ASSIGNMENT (uploads to /api/files/upload with role check bypass) ── */
+    // Since students can't use /api/files/upload (LECTURER only),
+    // we upload to a dedicated student submission endpoint.
+    // For now we use /api/files/upload with department = "STUDENT_SUBMISSION"
+    // NOTE: Your lecturer's FileController blocks students from /api/files/upload.
+    // So we need a separate endpoint — see the SubmissionController.java I'll provide.
+    async function doSubmitAssignment() {
+        const name  = document.getElementById('sub-name').value.trim();
+        const title = document.getElementById('sub-title').value.trim();
+        const file  = document.getElementById('sub-file').files[0];
+
+        if (!name || !title) { showFMsg('sub-msg', 'Please fill in your name and assignment title.', 'err'); return; }
+        if (!file) { showFMsg('sub-msg', 'Please select your assignment file.', 'err'); return; }
+
+        const btn = document.getElementById('sub-btn');
+        btn.innerHTML = '<span class="spinner"></span>Submitting...';
+        btn.disabled = true;
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('studentName', name);
+        fd.append('assignmentTitle', title);
+
+        try {
+            // POST /api/submissions/upload — see SubmissionController.java
+            const res = await fetch(`${API}/api/submissions/upload`, {
+                method: 'POST',
+                headers: H,
+                body: fd
+            });
+
+            if (res.ok) {
+                showFMsg('sub-msg', '✅ Assignment submitted successfully! Your lecturer can now view it.', 'ok');
+                document.getElementById('sub-name').value = '';
+                document.getElementById('sub-title').value = '';
+                document.getElementById('sub-file').value = '';
+                document.getElementById('sub-fname').textContent = 'Click to choose your file (PDF, DOC, DOCX, ZIP)';
+                toast('Assignment submitted!', 'ok');
+            } else {
+                const text = await res.text();
+                showFMsg('sub-msg', text || 'Submission failed. Try again.', 'err');
+            }
+        } catch (e) {
+            showFMsg('sub-msg', 'Cannot connect to server.', 'err');
+        } finally {
+            btn.innerHTML = '📤 Submit Assignment';
+            btn.disabled = false;
+        }
+    }
+
+    function onSubFile(input) {
+        if (input.files[0]) {
+            document.getElementById('sub-fname').textContent = '✅ ' + input.files[0].name;
+        }
+    }
+
+    /* ── UTILS ── */
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+    function esc(s) {
+        return String(s || '').replace(/[&<>"']/g, c =>
+            ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function showFMsg(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = 'fmsg ' + type;
+        el.style.display = 'block';
+    }
+    let toastTimer;
+    function toast(msg, type = 'ok') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = 'toast show ' + type;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('previewModal').addEventListener('click', e => {
+        if (e.target.id === 'previewModal') closePv();
+    });
+
+    loadDash();
+</script>
+</body>
+</html>

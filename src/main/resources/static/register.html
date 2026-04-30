@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>UTG eLearning — Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--forest:#1b4332;--moss:#2d6a4f;--leaf:#52b788;--ink:#0e1a12;--paper:#fffff8;--cream:#f8f5ef;--line:#ddd8ce;--muted:#7a7065;--err:#9b2226;}
+        body{font-family:'Jost',sans-serif;background:var(--cream);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+        .wrap{width:100%;max-width:520px;}
+        .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:0.875rem;margin-bottom:1.5rem;transition:color 0.2s;}
+        .back:hover{color:var(--forest);}
+        .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:2.5rem;}
+        .card h1{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--ink);margin-bottom:4px;font-weight:700;}
+        .card > p{color:var(--muted);font-size:0.875rem;margin-bottom:1.8rem;font-weight:300;}
+        .role-cards{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem;}
+        .role-card{border:2px solid var(--line);border-radius:12px;padding:1.1rem;cursor:pointer;transition:all 0.2s;text-align:center;background:#fff;}
+        .role-card:hover{border-color:var(--leaf);}
+        .role-card.sel{border-color:var(--forest);background:#f0faf4;}
+        .role-card .ico{font-size:1.8rem;margin-bottom:6px;}
+        .role-card .rt{font-weight:600;font-size:0.9rem;color:var(--ink);}
+        .role-card .rd{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .field{margin-bottom:1rem;}
+        .field label{display:block;font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
+        .field input,.field select{width:100%;padding:0.8rem 1rem;border:1.5px solid var(--line);border-radius:9px;font-family:'Jost',sans-serif;font-size:0.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color 0.2s;}
+        .field input:focus,.field select:focus{border-color:var(--moss);}
+        .msg{padding:0.7rem 1rem;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;display:none;}
+        .msg.err{background:#fff5f5;border:1px solid #ffc9c9;color:var(--err);}
+        .msg.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;}
+        .btn{width:100%;padding:0.9rem;background:var(--forest);color:#fff;border:none;border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:background 0.2s;}
+        .btn:hover{background:var(--moss);}
+        .btn:disabled{opacity:0.65;cursor:not-allowed;}
+        .alt{text-align:center;font-size:0.875rem;color:var(--muted);margin-top:1.2rem;}
+        .alt a{color:var(--forest);font-weight:500;text-decoration:none;}
+        .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+        .card{animation:fadeUp 0.4s ease both;}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <a href="login.html" class="back">← Back to login</a>
+    <div class="card">
+        <h1>Create account</h1>
+        <p>Join the UTG eLearning platform</p>
+        <div class="role-cards">
+            <div class="role-card sel" id="rcStudent" onclick="pick('STUDENT')">
+                <div class="ico">🎓</div><div class="rt">Student</div>
+                <div class="rd">Download materials & submit assignments</div>
+            </div>
+            <div class="role-card" id="rcLecturer" onclick="pick('LECTURER')">
+                <div class="ico">👨‍🏫</div><div class="rt">Lecturer</div>
+                <div class="rd">Upload materials & create assignments</div>
+            </div>
+        </div>
+        <div class="msg" id="msg"></div>
+        <div class="row">
+            <div class="field"><label>Username</label><input id="uname" placeholder="e.g. jallow22" autocomplete="username"/></div>
+            <div class="field"><label>Email</label><input type="email" id="email" placeholder="you@utg.gm" autocomplete="email"/></div>
+        </div>
+        <div class="field">
+            <label>Department</label>
+            <select id="dept">
+                <option value="">Select department</option>
+                <option>Computer Science</option><option>Engineering</option>
+                <option>Business Administration</option><option>Law</option>
+                <option>Medicine</option><option>Agriculture</option>
+            </select>
+        </div>
+        <div class="field"><label>Password</label><input type="password" id="pass" placeholder="Create a password" autocomplete="new-password"/></div>
+        <button class="btn" id="regBtn" onclick="doRegister()">Create Account</button>
+        <div class="alt">Already have an account? <a href="login.html">Sign in</a></div>
+    </div>
+</div>
+<script>
+    // ── CONFIG ──────────────────────────────────────────────
+    const API = 'http://localhost:8080';
+    // ────────────────────────────────────────────────────────
+
+    let role = 'STUDENT';
+
+    function pick(r) {
+        role = r;
+        document.getElementById('rcStudent').classList.toggle('sel', r === 'STUDENT');
+        document.getElementById('rcLecturer').classList.toggle('sel', r === 'LECTURER');
+    }
+
+    async function doRegister() {
+        const username = document.getElementById('uname').value.trim();
+        const email    = document.getElementById('email').value.trim();
+        const dept     = document.getElementById('dept').value;
+        const password = document.getElementById('pass').value;
+
+        if (!username || !email || !dept || !password) {
+            showMsg('Please fill in all fields.', 'err'); return;
+        }
+
+        const btn = document.getElementById('regBtn');
+        btn.innerHTML = '<span class="spinner"></span>Creating...';
+        btn.disabled = true;
+
+        try {
+            // POST /api/auth/register
+            // Body: { username, email, password, role, department }
+            const res = await fetch(`${API}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, role, department: dept })
+            });
+
+            if (res.ok) {
+                showMsg('Account created! Redirecting to login...', 'ok');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } else {
+                const text = await res.text();
+                showMsg(text || 'Registration failed. That username may already exist.', 'err');
+            }
+        } catch (e) {
+            showMsg('Cannot connect to server. Make sure Spring Boot is running on port 8080.', 'err');
+        } finally {
+            btn.innerHTML = 'Create Account';
+            btn.disabled = false;
+        }
+    }
+
+    function showMsg(t, type) {
+        const el = document.getElementById('msg');
+        el.textContent = t;
+        el.className = 'msg ' + type;
+        el.style.display = 'block';
+    }
+</script>
+</body>
+</html>

@@ -63,4 +63,17 @@ public class FileService {
                 .orElseThrow(() -> new RuntimeException("File not found"));
         return Paths.get(courseFile.getFilePath());
     }
+
+    public void deleteFile(Long fileId) throws IOException {
+        fileLock.lock();
+        try {
+            CourseFile courseFile = fileRepository.findById(fileId)
+                    .orElseThrow(() -> new RuntimeException("File not found"));
+            Path filePath = Paths.get(courseFile.getFilePath());
+            Files.deleteIfExists(filePath);
+            fileRepository.delete(courseFile);
+        } finally {
+            fileLock.unlock();
+        }
+    }
 }
