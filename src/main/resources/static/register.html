@@ -8,7 +8,7 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--forest:#1b4332;--moss:#2d6a4f;--leaf:#52b788;--ink:#0e1a12;--paper:#fffff8;--cream:#f8f5ef;--line:#ddd8ce;--muted:#7a7065;--err:#9b2226;}
-        body{font-family:'Jost',sans-serif;background:var(--cream);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+        body{font-family:'Jost',sans-serif;background:darkslategray;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
         .wrap{width:100%;max-width:520px;}
         .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:0.875rem;margin-bottom:1.5rem;transition:color 0.2s;}
         .back:hover{color:var(--forest);}
@@ -26,13 +26,13 @@
         .field{margin-bottom:1rem;}
         .field label{display:block;font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
         .field input,.field select{width:100%;padding:0.8rem 1rem;border:1.5px solid var(--line);border-radius:9px;font-family:'Jost',sans-serif;font-size:0.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color 0.2s;}
-        .field input:focus,.field select:focus{border-color:var(--moss);}
+        .field input:focus,.field select:focus{border-color:darkslategray;}
         .msg{padding:0.7rem 1rem;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;display:none;}
         .msg.err{background:#fff5f5;border:1px solid #ffc9c9;color:var(--err);}
-        .msg.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;}
+        .msg.ok{background:darkslategray;border:1px solid #bbf7d0;color:#166534;}
         .btn{width:100%;padding:0.9rem;background:var(--forest);color:#fff;border:none;border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:background 0.2s;}
-        .btn:hover{background:var(--moss);}
-        .btn:disabled{opacity:0.65;cursor:not-allowed;}
+        .btn:hover{background:darkslategray;}
+        .btn{opacity:0.65;cursor:not-allowed;}
         .alt{text-align:center;font-size:0.875rem;color:var(--muted);margin-top:1.2rem;}
         .alt a{color:var(--forest);font-weight:500;text-decoration:none;}
         .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
@@ -69,6 +69,7 @@
                 <option>Computer Science</option><option>Engineering</option>
                 <option>Business Administration</option><option>Law</option>
                 <option>Medicine</option><option>Agriculture</option>
+                <option>Information System</option>
             </select>
         </div>
         <div class="field"><label>Password</label><input type="password" id="pass" placeholder="Create a password" autocomplete="new-password"/></div>
