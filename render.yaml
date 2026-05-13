@@ -1,0 +1,27 @@
+# Render Blueprint: https://render.com/docs/infrastructure-as-code
+# Dashboard → New → Blueprint → connect this repo → apply.
+databases:
+  - name: elearning-db
+    plan: free
+
+services:
+  - type: web
+    name: elearning
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: elearning-db
+          property: connectionString
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: APP_CORS_ALLOWED_ORIGIN_PATTERNS
+        value: "https://*.onrender.com,http://localhost:*,http://127.0.0.1:*,http://[::1]:*"
+      - key: FILE_UPLOAD_DIR
+        value: /tmp/elearning-uploads
