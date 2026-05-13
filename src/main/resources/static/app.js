@@ -6,6 +6,9 @@ const state = {
 };
 
 const API_BASE = (() => {
+    if (typeof window !== "undefined" && window.ELEARNING_API_BASE !== undefined) {
+        return window.ELEARNING_API_BASE;
+    }
     if (window.location.protocol === "file:") {
         return "http://localhost:8080";
     }
