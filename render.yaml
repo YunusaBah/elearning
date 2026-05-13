@@ -1,32 +1,8 @@
-# Render Blueprint: https://render.com/docs/infrastructure-as-code
-# MySQL image repo default branch is "main" (not "master"); wrong branch breaks the DB service.
-# Dashboard → New → Blueprint → connect this repo → apply.
-#
-# If you previously applied the Postgres blueprint, delete the old Postgres
-# instance in the Render dashboard before applying this stack (or use a new workspace).
+# Free stack: one Render Web Service (free) + external free Postgres (Neon recommended).
+# 1) Create a free DB at https://neon.tech → copy JDBC URL, user, and password.
+# 2) Render → New → Blueprint → connect this repo → when prompted, paste the three datasource env vars.
+# 3) After deploy, open the service URL (https://<name>.onrender.com).
 services:
-  - type: pserv
-    name: elearning-mysql
-    runtime: docker
-    repo: https://github.com/render-examples/mysql.git
-    branch: main
-    plan: standard
-    autoDeploy: false
-    region: oregon
-    disk:
-      name: mysql
-      mountPath: /var/lib/mysql
-      sizeGB: 10
-    envVars:
-      - key: MYSQL_DATABASE
-        value: elearning_db
-      - key: MYSQL_USER
-        value: elearning
-      - key: MYSQL_PASSWORD
-        generateValue: true
-      - key: MYSQL_ROOT_PASSWORD
-        generateValue: true
-
   - type: web
     name: elearning
     runtime: docker
@@ -36,19 +12,13 @@ services:
     healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_PROFILES_ACTIVE
-        value: render
-      - key: RENDER_MYSQL_HOST
-        fromService:
-          name: elearning-mysql
-          type: pserv
-          property: host
-      - key: RENDER_MYSQL_PASSWORD
-        fromService:
-          name: elearning-mysql
-          type: pserv
-          envVarKey: MYSQL_PASSWORD
-      - key: RENDER_MYSQL_USER
-        value: elearning
+        value: render-free
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
       - key: APP_CORS_ALLOWED_ORIGIN_PATTERNS
