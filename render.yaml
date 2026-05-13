@@ -1,10 +1,30 @@
 # Render Blueprint: https://render.com/docs/infrastructure-as-code
+# MySQL runs as a private service (same private network as the web app).
 # Dashboard → New → Blueprint → connect this repo → apply.
-databases:
-  - name: elearning-db
-    plan: free
-
+#
+# If you previously applied the Postgres blueprint, delete the old Postgres
+# instance in the Render dashboard before applying this stack (or use a new workspace).
 services:
+  - type: pserv
+    name: elearning-mysql
+    runtime: docker
+    repo: https://github.com/render-examples/mysql.git
+    branch: master
+    region: oregon
+    disk:
+      name: mysql
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: elearning_db
+      - key: MYSQL_USER
+        value: elearning
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+
   - type: web
     name: elearning
     runtime: docker
@@ -13,12 +33,20 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /actuator/health
     envVars:
-      - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: elearning-db
-          property: connectionString
       - key: SPRING_PROFILES_ACTIVE
         value: render
+      - key: RENDER_MYSQL_HOST
+        fromService:
+          name: elearning-mysql
+          type: pserv
+          property: host
+      - key: RENDER_MYSQL_PASSWORD
+        fromService:
+          name: elearning-mysql
+          type: pserv
+          envVarKey: MYSQL_PASSWORD
+      - key: RENDER_MYSQL_USER
+        value: elearning
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
       - key: APP_CORS_ALLOWED_ORIGIN_PATTERNS
